@@ -40,6 +40,14 @@ async def create(request: schemas.Blog, db: Session = Depends(get_db)):
     return new_blog
 
 
+@app.delete("/blog/{blog_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def destroy(blog_id, db: Session = Depends(get_db)):
+    one = db.query(models.Blog).filter(models.Blog.id == blog_id).delete(synchronize_session=False)
+    db.commit()
+    return 'done'
+
+
+
 @app.get("/blog")
 async def all(db: Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
