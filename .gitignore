@@ -1,0 +1,5 @@
+__pychache__
+.idea
+test_main.http
+identifier.sqlite
+blog.db
