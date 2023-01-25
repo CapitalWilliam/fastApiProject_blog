@@ -38,3 +38,17 @@ async def create(request: schemas.Blog, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_blog)
     return new_blog
+
+
+@app.get("/blog")
+async def all(db: Session = Depends(get_db)):
+    blogs = db.query(models.Blog).all()
+    return blogs
+
+
+@app.get("/blog/{blog_id}")
+async def show(blog_id: int, db: Session = Depends(get_db)):
+    one = db.query(models.Blog).filter(models.Blog.id == blog_id).first()
+    return one
+
+
