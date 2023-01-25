@@ -64,7 +64,7 @@ async def all(db: Session = Depends(get_db)):
     return blogs
 
 
-@app.get("/blog/{blog_id}", status_code=status.HTTP_200_OK)
+@app.get("/blog/{blog_id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowBlog)
 async def show(blog_id: int, response: Response, db: Session = Depends(get_db)):
     one = db.query(models.Blog).filter(models.Blog.id == blog_id).first()
     if not one:
