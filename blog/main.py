@@ -47,6 +47,16 @@ async def destroy(blog_id, db: Session = Depends(get_db)):
     return 'done'
 
 
+@app.put("/blog/{blog_id}", status_code=status.HTTP_202_ACCEPTED)
+async def update(blog_id, request: schemas.Blog, db: Session = Depends(get_db)):
+    blog = db.query(models.Blog).filter(models.Blog.id == blog_id)
+    if not blog.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Blog with id {blog_id} not found.")
+    blog.update(request.dict())
+    db.commit()
+    return "updated"
+
 
 @app.get("/blog")
 async def all(db: Session = Depends(get_db)):
