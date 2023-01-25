@@ -75,3 +75,14 @@ async def show(blog_id: int, response: Response, db: Session = Depends(get_db)):
         # response.status_code = status.HTTP_404_NOT_FOUND
         # return {"detail": f"Blog with the id {blog_id} is not available."}
     return one
+
+
+@app.post("/user", status_code=status.HTTP_201_CREATED)
+async def create_user(request: schemas.User, db: Session = Depends(get_db)):
+    new_user = models.User(name=request.name,
+                           email=request.email,
+                           password=request.password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
