@@ -15,9 +15,9 @@ __author__ = 'Capital_Wu'
 from fastapi import Depends, APIRouter,status,Response
 from sqlalchemy.orm import Session
 
-from blog import schemas, models
+from blog import schemas
 from blog.database import get_db
-from blog.hashing import Hash
+from blog.repository.user import create_one_user, show_one_user
 
 router = APIRouter(
     prefix="/user",
@@ -27,21 +27,11 @@ router = APIRouter(
 
 @router.post("/", response_model=schemas.ShowUser, status_code=status.HTTP_201_CREATED, )
 async def create_user(request: schemas.User, db: Session = Depends(get_db)):
-    new_user = models.User(name=request.name,
-                           email=request.email,
-                           password=Hash.bcrypt(request.password))
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+    return await create_one_user(db, request)
 
 
 @router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowUser, )
 async def show_user(user_id: int, response: Response, db: Session = Depends(get_db)):
-    one = db.query(models.User).filter(models.User.id == user_id).first()
-    if not one:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"User with the id {user_id} is not available.")
-        # response.status_code = status.HTTP_404_NOT_FOUND
-        # return {"detail": f"User with the id {user_id} is not available."}
-    return one
+    return await show_one_user(db, user_id)
+
+
