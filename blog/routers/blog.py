@@ -14,9 +14,9 @@ __author__ = 'Capital_Wu'
 
 from typing import List
 
-from fastapi import Depends, APIRouter,status
+from fastapi import Depends, APIRouter, status
 from sqlalchemy.orm import Session
-from blog import schemas
+from blog import schemas, oauth2
 from blog.database import get_db
 from blog.repository.blog import show_all_blogs, create_one_blog, delete_one_blog, update_one_blog, show_one_blog
 
@@ -26,28 +26,28 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=List[schemas.ShowBlog],)
-async def get_all(db: Session = Depends(get_db)):
+@router.get("/", response_model=List[schemas.ShowBlog])
+async def get_all(db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
     return await show_all_blogs(db)
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED,)
-async def create(request: schemas.Blog, db: Session = Depends(get_db)):
+@router.post("/", status_code=status.HTTP_201_CREATED, )
+async def create(request: schemas.Blog, db: Session = Depends(get_db),current_user: schemas.User = Depends(oauth2.get_current_user)):
     return await create_one_blog(db, request)
 
 
-@router.delete("/{blog_id}", status_code=status.HTTP_204_NO_CONTENT,)
-async def destroy(blog_id, db: Session = Depends(get_db)):
+@router.delete("/{blog_id}", status_code=status.HTTP_204_NO_CONTENT, )
+async def destroy(blog_id, db: Session = Depends(get_db),current_user: schemas.User = Depends(oauth2.get_current_user)):
     return await delete_one_blog(blog_id, db)
 
 
-@router.put("/{blog_id}", status_code=status.HTTP_202_ACCEPTED,)
-async def update(blog_id, request: schemas.Blog, db: Session = Depends(get_db)):
+@router.put("/{blog_id}", status_code=status.HTTP_202_ACCEPTED, )
+async def update(blog_id, request: schemas.Blog, db: Session = Depends(get_db),current_user: schemas.User = Depends(oauth2.get_current_user)):
     return await update_one_blog(blog_id, db, request)
 
 
-@router.get("/{blog_id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowBlog,)
-async def show(blog_id: int, db: Session = Depends(get_db)):
+@router.get("/{blog_id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowBlog, )
+async def show(blog_id: int, db: Session = Depends(get_db),current_user: schemas.User = Depends(oauth2.get_current_user)):
     return await show_one_blog(blog_id, db)
 
 
