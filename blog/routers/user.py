@@ -21,10 +21,13 @@ from blog import schemas, models
 from blog.database import get_db
 from blog.hashing import Hash
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/user",
+    tags=['Users']
+)
 
 
-@router.post("/user", response_model=schemas.ShowUser, status_code=status.HTTP_201_CREATED, tags=['users'])
+@router.post("/", response_model=schemas.ShowUser, status_code=status.HTTP_201_CREATED, )
 async def create_user(request: schemas.User, db: Session = Depends(get_db)):
     new_user = models.User(name=request.name,
                            email=request.email,
@@ -35,7 +38,7 @@ async def create_user(request: schemas.User, db: Session = Depends(get_db)):
     return new_user
 
 
-@router.get("/user/{user_id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowUser, tags=['users'])
+@router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowUser, )
 async def show_user(user_id: int, response: Response, db: Session = Depends(get_db)):
     one = db.query(models.User).filter(models.User.id == user_id).first()
     if not one:
