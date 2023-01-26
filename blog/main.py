@@ -83,7 +83,9 @@ async def show(blog_id: int, response: Response, db: Session = Depends(get_db)):
     return one
 
 
-@app.post("/user", status_code=status.HTTP_201_CREATED)
+@app.post("/user",
+          response_model=schemas.ShowUser,
+          status_code=status.HTTP_201_CREATED)
 async def create_user(request: schemas.User, db: Session = Depends(get_db)):
     new_user = models.User(name=request.name,
                            email=request.email,
@@ -92,3 +94,14 @@ async def create_user(request: schemas.User, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
+
+
+@app.get("/user/{user_id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowUser)
+async def show_user(user_id: int, response: Response, db: Session = Depends(get_db)):
+    one = db.query(models.User).filter(models.User.id == user_id).first()
+    if not one:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User with the id {user_id} is not available.")
+        # response.status_code = status.HTTP_404_NOT_FOUND
+        # return {"detail": f"User with the id {user_id} is not available."}
+    return one
