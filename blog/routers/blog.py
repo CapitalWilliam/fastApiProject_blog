@@ -25,7 +25,7 @@ from blog.repository.blog import show_all_blogs, create_one_blog, delete_one_blo
 
 router = APIRouter(
     prefix="/blog",
-    tags=['blogs']
+    tags=['Blogs']
 )
 
 
