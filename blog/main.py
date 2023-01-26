@@ -34,7 +34,7 @@ def get_db():
         db.close()
 
 
-@app.post("/blog", status_code=status.HTTP_201_CREATED)
+@app.post("/blog", status_code=status.HTTP_201_CREATED,tags=['blogs'])
 async def create(request: schemas.Blog, db: Session = Depends(get_db)):
     new_blog = models.Blog(title=request.title,
                            body=request.body)
@@ -44,7 +44,7 @@ async def create(request: schemas.Blog, db: Session = Depends(get_db)):
     return new_blog
 
 
-@app.delete("/blog/{blog_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/blog/{blog_id}", status_code=status.HTTP_204_NO_CONTENT,tags=['blogs'])
 async def destroy(blog_id, db: Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == blog_id)
     if not blog.first():
@@ -55,7 +55,7 @@ async def destroy(blog_id, db: Session = Depends(get_db)):
     return 'done'
 
 
-@app.put("/blog/{blog_id}", status_code=status.HTTP_202_ACCEPTED)
+@app.put("/blog/{blog_id}", status_code=status.HTTP_202_ACCEPTED,tags=['blogs'])
 async def update(blog_id, request: schemas.Blog, db: Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == blog_id)
     if not blog.first():
@@ -66,13 +66,13 @@ async def update(blog_id, request: schemas.Blog, db: Session = Depends(get_db)):
     return "updated"
 
 
-@app.get("/blog", response_model=List[schemas.ShowBlog])
+@app.get("/blog", response_model=List[schemas.ShowBlog],tags=['blogs'])
 async def show_all_blogs(db: Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
     return blogs
 
 
-@app.get("/blog/{blog_id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowBlog)
+@app.get("/blog/{blog_id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowBlog,tags=['blogs'])
 async def show(blog_id: int, response: Response, db: Session = Depends(get_db)):
     one = db.query(models.Blog).filter(models.Blog.id == blog_id).first()
     if not one:
@@ -83,9 +83,7 @@ async def show(blog_id: int, response: Response, db: Session = Depends(get_db)):
     return one
 
 
-@app.post("/user",
-          response_model=schemas.ShowUser,
-          status_code=status.HTTP_201_CREATED)
+@app.post("/user",response_model=schemas.ShowUser,status_code=status.HTTP_201_CREATED,tags=['users'])
 async def create_user(request: schemas.User, db: Session = Depends(get_db)):
     new_user = models.User(name=request.name,
                            email=request.email,
@@ -96,7 +94,7 @@ async def create_user(request: schemas.User, db: Session = Depends(get_db)):
     return new_user
 
 
-@app.get("/user/{user_id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowUser)
+@app.get("/user/{user_id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowUser,tags=['users'])
 async def show_user(user_id: int, response: Response, db: Session = Depends(get_db)):
     one = db.query(models.User).filter(models.User.id == user_id).first()
     if not one:
