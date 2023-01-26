@@ -33,7 +33,7 @@ class ShowBlog(BaseModel):
     title: str
     body: str
 
-    class Config():
+    class Config:
         orm_mode = True
 
 
